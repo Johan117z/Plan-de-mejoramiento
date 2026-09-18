@@ -1,98 +1,56 @@
-# 06 — Data
+# 06 — Data Architecture & Persistence Policies: FixGo
 
-> **What is this?** How the system stores, structures, and migrates data.
-> In microservices, data management is one of the most complex challenges.
-
-## Fundamental principle in microservices
-
-> **Each microservice owns its own data.**
-
-No service should access another service's database directly. If it needs data from another
-service, it requests it via API or receives it via event. This principle guarantees independence.
+> **What is this?** The master directory for data persistence, database schemas, dictionary specifications, and schema evolution strategies for FixGo microservices.
 
 ---
 
-## What is here and how to fill it in
+## Why this section exists
 
-### `models.md` ⭐
-Data models for each microservice.
-**Fill in:** ER (entity-relationship) diagram or description of collections/tables for each service.
+Data governance in a microservices architecture requires strict boundaries. In FixGo, emergency dispatch, location tracking, and repair management demand distinct storage capabilities:
 
-**Format per service:**
-```markdown
-## Service: [name]
-**DB Engine:** [PostgreSQL / MongoDB / Redis / etc.]
-**Justification:** [why this engine for this service]
+- Geospatial querying (PostGIS) for matching drivers with nearby mechanics/tow trucks.
+- High-throughput key-value caching (Redis) for live streaming GPS coordinates.
+- Relational integrity (PostgreSQL) for transactional service orders and user accounts.
 
-### Table/Collection: [name]
-| Field | Type | Nullable | Description | Constraints |
-|-------|------|----------|-------------|-------------|
-| id | UUID | No | Unique identifier | PK |
-| [field] | [type] | [Yes/No] | [description] | [FK/Unique/etc.] |
-
-### Indexes
-| Name | Fields | Type | Justification |
-|------|--------|------|---------------|
-```
-
-### `data-dictionary.md` ⭐
-Exact meaning of each important field in the system.
-**Fill in:** especially for fields that may be ambiguous or have business rules.
-
-**Format:**
-```markdown
-| Field | Service | Table | Type | Detailed description | Possible values |
-|-------|---------|-------|------|---------------------|-----------------|
-| status | scheduling | schedule | ENUM | Current status of the schedule | ACTIVE, CANCELLED, PENDING |
-```
-
-### `modeling-conventions.md`
-Naming and style conventions for the project's databases.
-**Fill in:** naming (snake_case or camelCase), use of UUIDs vs sequential, standard timestamps,
-soft delete vs hard delete, auditing (created_at, updated_at, created_by).
-
-### `normalization-assessment.md`
-Analysis of the normalization level and justification for denormalizations.
-**Fill in:** for each intentional denormalization, explain why (performance, simplification).
-
-### `migration-strategy.md`
-Strategy for migrating data between schema versions.
-**Fill in:** migration tool (Flyway, Liquibase, Alembic), rollback policy,
-how to handle migrations with data in production.
+To prevent distributed monoliths, **each service strictly owns its database schema**.
 
 ---
 
-## Correlations with other sections
+## Folder Map & Index
 
-| This section is fed by... | And feeds into... |
-|---------------------------|-------------------|
-| `02-domain/entities-and-rules.md` → domain entities | DB tables |
-| `05-architecture/` → DB engine decisions | Engine choice in `models.md` |
-| `models.md` | `07-api/contracts/` → what data each service exposes |
-| `models.md` | `08-uml/` → ER diagrams |
-| `models.md` | `09-microservices/[service]/data-model.md` |
-
----
-
-## Important data decisions in microservices
-
-### SQL or NoSQL?
-There is no single answer. It depends on the service:
-- **SQL** (PostgreSQL, MySQL): relational data, ACID transactions, fixed schema
-- **Document** (MongoDB): hierarchical data, flexible schema, high variability
-- **Key-value** (Redis): cache, sessions, high-speed temporary data
-- **Time series** (InfluxDB, TimescaleDB): metrics, event logs
-
-### How to handle consistency between services?
-Without a shared database, consistency is **eventual**:
-- Saga Pattern: chain of compensating transactions
-- Outbox Pattern: guarantee that the event is published along with the transaction
+| Document                                                           | Description                                                                                       | Status              |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ------------------- |
+| **[`data-models.md`](./data-models.md)** ⭐                        | Database per service, ER diagrams, PostgreSQL/PostGIS schemas, and indexes.                       | **Completed**       |
+| **[`data-dictionary.md`](./data-dictionary.md)** ⭐                | Detailed business data dictionary, attributes, types, and allowable status ENUMs.                 | **Ready for Draft** |
+| **[`modeling-conventions.md`](./modeling-conventions.md)**         | Project-wide standards for identifiers (UUIDv4), timestamps, snake_case naming, and soft deletes. | **Ready for Draft** |
+| **[`normalization-assessment.md`](./normalization-assessment.md)** | Trade-offs analysis: BCNF normalization vs intentional read-side denormalization for performance. | **Ready for Draft** |
+| **[`migration-strategy.md`](./migration-strategy.md)**             | Zero-downtime Flyway migration rules, forward-only schema updates, and 2-phase field deprecation. | **Ready for Draft** |
 
 ---
 
-## Questions this section must answer
+## Data Ownership & Storage Engine Matrix
 
-- What data does each microservice handle?
-- Why was that database engine chosen for each service?
-- How is the schema updated without breaking the system?
-- Who is the "owner" of each piece of data in the system?
+| Microservice         | DB Engine               | Primary Data Entities                         | Justification                                                      |
+| -------------------- | ----------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `auth-service`       | PostgreSQL 15           | `users`, `roles`, `credentials`               | ACID compliance, user auth, RBAC constraints.                      |
+| `assistance-service` | PostgreSQL 15 + PostGIS | `assistance_requests`, `dispatch_assignments` | Native spatial indexing (`GEOGRAPHY`, `GIST`) for radius matching. |
+| `workshop-service`   | PostgreSQL 15           | `workshops`, `service_orders`, `mechanics`    | Complex relational hierarchies, state transition integrity.        |
+| `telemetry-service`  | Redis 7 + MongoDB 7     | Geo spatial streams, telemetry logs           | Low-latency in-memory GPS stream ingestion & time-series storage.  |
+
+---
+
+## Key Data Governance Rules
+
+1. **No Cross-Database Joins:** Microservices never query another service's database directly. All cross-boundary data is obtained via REST contracts or domain events.
+2. **Immutable Audit Trails:** Tables must implement soft deletes (`deleted_at`) alongside creation/update timestamps in UTC (`TIMESTAMPTZ`).
+3. **Migration Integrity:** Direct DDL changes in staging/production are forbidden; all alterations run through versioned Flyway scripts (`V001__...sql`).
+
+---
+
+## Correlations with Other Sections
+
+| If you modify this data section...  | You must also update...                                   |
+| ----------------------------------- | --------------------------------------------------------- |
+| Database Schemas (`data-models.md`) | DTOs & API Contracts (`07-api/`) and UML ERDs (`08-uml/`) |
+| Entity Attributes                   | Domain Specifications (`02-domain/entities-and-rules.md`) |
+| Service Persistence Configurations  | Microservice Infrastructure Guides (`09-microservices/`)  |
