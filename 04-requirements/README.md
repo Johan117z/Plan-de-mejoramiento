@@ -1,117 +1,100 @@
-# 04 — Requirements
+# 04 — Requirements (FixGo Platform)
 
-> **What is this?** The formal specification of what the system must do.
-> Functional: what it does. Non-functional: how well it does it.
+> **What is this?** The formal specification of what the FixGo system must do and how well it must perform.
+> Functional: emergency roadside dispatch, geolocation, user authentication. Non-functional: sub-second latency, security, 99.9% availability.
 
 ## Why this section exists
 
-Requirements are the contract between the team and the client/stakeholder.
+Requirements are the contract between the engineering team and project stakeholders.
 Without them:
-- There is no way to verify whether the system is complete
-- Scope changes have no baseline for comparison
-- Tests have no success criterion
+
+- There is no way to verify whether the roadside dispatch engine is complete.
+- Scope changes regarding location tracking have no baseline for comparison.
+- Test suites in `11-quality/` have no success criteria.
 
 ---
 
 ## Types of requirements
 
 ### Functional (FR)
-Describe **what the system does**: functions, behaviors, data transformations.
-*Example: "The system must allow the user to recover their password via email."*
+
+Describe **what the FixGo system does**: functions, real-time map updates, and payment processing.
+_Example: "The system must allow a stranded driver to request a tow truck using active GPS coordinates."_
 
 ### Non-functional (NFR)
-Describe **how it does it**: quality, performance, availability, security.
-*Example: "The system must respond in less than 200ms for 95% of requests."*
 
-NFRs are usually harder to meet than FRs and are ignored more frequently. **They are equally important.**
+Describe **how it performs**: response times under heavy load, data encryption, map rendering speed.
+_Example: "The dispatch microservice must process geo-proximity queries within less than 250ms for 95% of requests."_
 
 ---
 
-## What is here and how to fill it in
+## Structure and Files in this Folder
 
 ### `functional.md` ⭐
-List of all the system's functional requirements.
-**Fill in:** numbered, with the module/service they belong to, source (originating HU), priority.
 
-**Format:**
-```markdown
-| ID | Module | Description | Source (HU) | Priority |
-|----|--------|-------------|------------|---------|
-| FR-001 | [Service] | The system must [do something] | HU-XXX-001 | High |
-```
+List of all functional requirements across microservices.
+
+| ID     | Module / Microservice    | Description                                               | Source (HU) | Priority |
+| ------ | ------------------------ | --------------------------------------------------------- | ----------- | -------- |
+| FR-001 | `fixgo-dispatch-service` | Broadcast emergency request to drivers within 10km radius | HU-LOC-001  | High     |
+| FR-002 | `fixgo-iam-service`      | Authenticate users via JWT and validate RBAC permissions  | HU-IAM-001  | High     |
+| FR-003 | `fixgo-location-service` | Stream real-time mechanic location via WebSockets         | HU-LOC-002  | High     |
 
 ### `non-functional.md` ⭐
-Quality, performance, and technical constraint requirements.
-**Fill in:** by category (performance, availability, security, scalability, etc.)
 
-**Format:**
-```markdown
-## Performance
-| ID | Requirement | Metric | How to verify |
-|----|------------|--------|--------------|
-| NFR-001 | Response time | p95 < 200ms | Load test with K6 |
+Quality, performance, and operational constraints for FixGo.
 
-## Availability
-| ID | Requirement | Metric | How to verify |
-|----|------------|--------|--------------|
-| NFR-010 | Uptime | 99.9% monthly | Production monitoring |
+#### Performance
 
-## Security
-| ID | Requirement | Description |
-|----|------------|-------------|
-| NFR-020 | Authentication | JWT with 1-hour expiration |
-```
+| ID      | Requirement            | Metric           | How to verify             |
+| ------- | ---------------------- | ---------------- | ------------------------- |
+| NFR-001 | Dispatch query latency | p95 < 250ms      | Load testing with k6      |
+| NFR-002 | System throughput      | 1000 RPS minimum | Stress testing in staging |
+
+#### Availability
+
+| ID      | Requirement   | Metric            | How to verify                 |
+| ------- | ------------- | ----------------- | ----------------------------- |
+| NFR-010 | System Uptime | 99.9% monthly SLO | Prometheus & Grafana alerting |
+
+#### Security
+
+| ID      | Requirement  | Description                                                   |
+| ------- | ------------ | ------------------------------------------------------------- |
+| NFR-020 | API Security | Mandatory JWT in Bearer header; 1-hour expiration             |
+| NFR-021 | Data Privacy | Encrypt PII and real-time location history at rest (Ley 1581) |
 
 ### `user-stories.md`
-Formalized user stories (coming from the `03-product/` backlog).
-**Fill in:** with As/I want/So that format + verifiable acceptance criteria.
+
+Formalized User Stories defining system interactions.
+
+- `HU-LOC-001.md`: Request Emergency Roadside Assistance.
 
 ### `traceability-matrix.md` ⭐
-Table that connects: HU → Requirement → Test case.
-**Fill in:** when you have requirements and tests defined. Allows coverage verification.
 
-**Format:**
-```markdown
-| HU | FR/NFR | Description | Test case | Status |
-|----|--------|-------------|----------|--------|
-| HU-IAM-001 | FR-001 | Login with email | TC-001 | ✅ |
-```
+Connects user stories, functional/non-functional requirements, and test cases.
 
-### `_template-hu.md`
-Template for a complete User Story with acceptance criteria.
-
-### `_template-nfr.md`
-Template for specifying non-functional requirements with their verification metrics.
+| HU         | FR/NFR  | Description                  | Test Case   | Status    |
+| ---------- | ------- | ---------------------------- | ----------- | --------- |
+| HU-LOC-001 | FR-001  | Dispatch roadside assistance | TC-DISP-001 | ✅ Passed |
+| HU-LOC-001 | NFR-001 | Response latency < 250ms     | TC-PERF-001 | ✅ Passed |
 
 ---
 
 ## Correlations with other sections
 
-| This section feeds... | Why |
-|-----------------------|-----|
-| `05-architecture/` | Performance/availability NFRs guide architectural decisions |
-| `11-quality/testing-strategy.md` | Each FR must have at least one test case |
-| `09-microservices/` | FRs are grouped by responsible service |
-| `07-api/` | Integration FRs → endpoints in API contracts |
-| `15-project-control/risks.md` | Very demanding NFRs usually generate technical risks |
+| This section feeds...            | Why                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------- |
+| `05-architecture/`               | Performance/availability NFRs guide spatial indexing (PostGIS/Redis) and caching decisions. |
+| `07-api/`                        | Integration FRs map directly to OpenAPI REST endpoints and WebSocket channels.              |
+| `09-microservices/`              | FRs are domain-grouped into service boundaries (`dispatch`, `iam`, `location`).             |
+| `11-quality/testing-strategy.md` | Every FR and NFR has corresponding integration/load test cases.                             |
+| `15-project-control/risks.md`    | High NFR metrics (e.g., real-time WebSocket scaling) highlight technical risks.             |
 
 ---
 
-## Common mistakes to avoid
+## Questions answered by this section
 
-❌ **"The system must be fast"** → Not measurable. Better: "p95 < 200ms"
-
-❌ **"The system must be secure"** → Not verifiable. Better: "Authentication with JWT, tokens expire in 1h"
-
-❌ Writing requirements that describe the solution instead of the problem.
-
-✅ A good requirement is: **specific, measurable, achievable, relevant, and verifiable**.
-
----
-
-## Questions this section must answer
-
-- What must the system do for each type of user?
-- With what speed, availability, and security?
-- Which requirement originates each test case?
-- Are all requirements covered by tests?
+- What actions can stranded drivers and mechanics perform in the system?
+- What are the performance, security, and availability thresholds required for emergency roadside operations?
+- How are user stories linked directly to verifiable code and automated test cases?
