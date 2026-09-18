@@ -1,4 +1,4 @@
-# Product Vision
+# Product Vision — FixGo Platform
 
 > The vision is the team's north star. All sprints, design decisions,
 > and trade-offs are evaluated against this vision.
@@ -8,83 +8,59 @@
 
 ## Vision statement
 
-> Use the Geoffrey Moore template:
-
-**For** [target customer]
-**who** [has the need / faces the problem]
-**the** [product name]
-**is a** [product category]
-**that** [main benefit / reason to choose]
-**unlike** [competing alternative]
-**our product** [key differentiator].
+**For** stranded drivers and motorcyclists  
+**who** face roadside mechanical emergencies without immediate assistance,  
+**the** FixGo platform  
+**is a** real-time geolocation roadside dispatching platform  
+**that** instantly connects vehicle owners with nearby verified mechanics and tow operators with upfront transparent pricing,  
+**unlike** traditional phone-based assistance call centers or fragmented contact lists,  
+**our product** automates dispatch matching, real-time GPS tracking, and end-to-end transparent service routing.
 
 ---
 
 ## Team mission
 
-> In 1-2 sentences: why does this team exist? What change in the world does it seek to achieve?
+To reduce driver stress and roadside waiting times by creating a seamless, reliable, and transparent digital ecosystem that instantly bridges stranded vehicle operators with qualified local service providers.
 
 ---
 
 ## Strategic pillars
 
-Pillars are the focus areas that take us from mission to vision.
-They should be few (3-5) and consistent over time.
-
-| Pillar | Description | Success metrics |
-|--------|-------------|----------------|
-| [Pillar 1: e.g. Speed] | [What it means for our product] | [KPIs] |
-| [Pillar 2: e.g. Reliability] | [Description] | [KPIs] |
-| [Pillar 3: e.g. Scale] | [Description] | [KPIs] |
+| Pillar               | Description                                                           | Success metrics                       |
+| -------------------- | --------------------------------------------------------------------- | ------------------------------------- |
+| Speed & Matching     | Minimizing time-to-dispatch through efficient geolocation algorithms  | Mean Time to Dispatch (MTTD) < 3 mins |
+| Reliability & Safety | Ensuring verified mechanics, accurate GPS tracking, and service trust | Service Completion Rate > 95%         |
+| Transparency         | Providing clear, upfront service pricing and real-time status updates | User Satisfaction (CSAT) > 4.5/5      |
 
 ---
 
 ## High-level roadmap
 
-> The roadmap shows how the product evolves over time.
-> Horizon 1 (0-3 months): high certainty, detail in HUs
-> Horizon 2 (3-6 months): medium certainty, epics
-> Horizon 3 (6-12 months): low certainty, focus areas
-
-```
-Q1 2024 ──── Q2 2024 ──── Q3 2024 ──── Q4 2024
-     │              │              │              │
-  [MVP]      [Feature A]    [Feature B]   [Scale]
-  Validate    Expand         Deepen        Grow
-  hypothesis  the market     the value
-```
-
-| Horizon | Period | Objective | Epics / Features | Uncertainty |
-|---------|--------|----------|----------------|-------------|
-| H1 (Now) | [Q1] | [Objective] | [Epic 1, Epic 2] | Low |
-| H2 (Next) | [Q2] | [Objective] | [Epic 3, Area X] | Medium |
-| H3 (Later) | [Q3-Q4] | [Objective] | [Area Y, Area Z] | High |
+| Horizon    | Period     | Objective                           | Epics / Features                                                                          | Uncertainty |
+| ---------- | ---------- | ----------------------------------- | ----------------------------------------------------------------------------------------- | ----------- |
+| H1 (Now)   | Q1-Q2 2026 | Validate core geolocation matching  | Real-time GPS request dispatch, basic driver/mechanic profiles, emergency alert creation  | Low         |
+| H2 (Next)  | Q3 2026    | Streamline transaction flow & trust | In-app payment integration, user rating & review system, multi-vehicle profile management | Medium      |
+| H3 (Later) | Q4 2026    | Enhance dispatch automation & scale | Predictive dispatching, offline SMS fallback routing, scheduled maintenance bookings      | High        |
 
 ---
 
 ## Product principles
 
-These principles guide design and prioritization decisions when there are trade-offs.
-
-1. **[Principle 1]:** [description. Example: "New user first — every new feature must be understandable in 2 minutes without onboarding"]
-
-2. **[Principle 2]:** [description. Example: "Opinionated about what matters, flexible on the secondary"]
-
-3. **[Principle 3]:** [description]
+1. **Safety and Speed First:** Every design choice must prioritize getting help to the driver as fast and safely as possible; UI interactions during emergencies must take fewer than 3 taps.
+2. **Transparent Expectations:** No hidden fees or vague arrival times. Drivers must always see real-time mechanic location and upfront estimated costs.
+3. **Offline Resilience:** Roadside emergencies happen in poor coverage zones; critical actions must gracefully degrade or queue via SMS/offline sync mechanisms.
 
 ---
 
 ## Product Definition of Done
 
-> The product is "done" when it achieves these OKRs:
+**Objective:** Successfully deploy the FixGo MVP to validate rapid roadside dispatch and high driver satisfaction in urban and highway corridors.
 
-**Objective:** [What we want to achieve]
-
-| Key Result | Baseline | Target | Date |
-|------------|---------|--------|------|
-| KR1: [specific metric] | [current value] | [target value] | [date] |
-| KR2: [metric] | [current] | [target] | [date] |
-| KR3: [business metric] | [current] | [target] | [date] |
+| Key Result                                         | Baseline                    | Target               | Date       |
+| -------------------------------------------------- | --------------------------- | -------------------- | ---------- |
+| KR1: Average time from request to mechanic arrival | 90 minutes                  | < 30 minutes         | 2026-06-30 |
+| KR2: Successful completed assistance dispatches    | 0                           | 1,000 requests/month | 2026-09-30 |
+| KR3: Driver overall satisfaction score             | 2.5/5 (Phone call baseline) | > 4.5/5              | 2026-12-31 |
 
 ---
 
