@@ -1,98 +1,51 @@
-# 12 — UX/UI
+# 11 — UX/UI (User Experience & Interface) - FixGo
 
-> **What is this?** The user experience design: how the system looks, how it is navigated,
-> and how it behaves from the end user's perspective.
+> **¿Qué es esto?** El diseño de la experiencia de usuario: cómo se ve el sistema, cómo se navega
+> y cómo se comporta desde la perspectiva del conductor y del taller mecánico.
 
-## Why design comes before code
+## Por qué el diseño precede al código
 
-Changing a wireframe takes 5 minutes. Changing the code takes hours.
-Changing the code in production with real users can cost days and reputation.
+Cambiar un wireframe en Figma toma 5 minutos. Cambiar el código toma horas.
+Cambiar el código en producción con usuarios reales varados en carretera cuesta días y reputación.
 
-**Design first → implement later.**
-
----
-
-## What is here and how to fill it in
-
-### `navigation-map.md` ⭐ (Start here)
-The map of all screens/pages and how they connect.
-**Fill in:** navigation tree, from which screen you reach which, what role can access what.
-
-**Format:**
-```markdown
-## Navigation map
-
-### Public area (no authentication)
-- / (home)
-  - /login
-  - /register
-  - /recover-password
-
-### Private area — Role: [Role 1]
-- /dashboard
-  - /[module-1]
-    - /[module-1]/list
-    - /[module-1]/{id}/detail
-  - /profile
-
-### Private area — Role: [Role 2]
-[...]
-
-## Access matrix
-| Screen | [Role 1] | [Role 2] | [Admin] |
-|--------|---------|---------|---------|
-| /dashboard | ✅ | ✅ | ✅ |
-| /admin | ❌ | ❌ | ✅ |
-```
-
-### `wireframes.md`
-Low-fidelity designs of the main screens.
-**Fill in:** wireframes in ASCII, Figma, or Balsamiq. Focus on structure, not colors.
-
-### `design-system.md`
-The project's design system: tokens, components, patterns.
-**Fill in:** color palette, typography, spacing, base components (buttons, forms, tables).
-
-**Format:**
-```markdown
-## Design tokens
-
-### Colors
-| Token | Value | Use |
-|-------|-------|-----|
-| --color-primary | #1976D2 | Primary buttons, links |
-| --color-error | #D32F2F | Error messages |
-| --color-success | #388E3C | Confirmations |
-
-### Typography
-| Level | Size | Weight | Use |
-|-------|------|--------|-----|
-| H1 | 32px | 700 | Page titles |
-| Body | 16px | 400 | General text |
-
-## Components
-### Primary button
-[description, variants, when to use it]
-
-### Data table
-[columns, pagination, search, inline actions]
-```
+**Diseñar primero → Implementar después.**
 
 ---
 
-## Correlations with other sections
+## Estructura del Módulo
 
-| This section is fed by... | And feeds into... |
-|---------------------------|-------------------|
-| `04-requirements/user-stories.md` → what flows exist | Screens implementing each HU |
-| `02-domain/entities-and-rules.md` → what data to display | Fields in wireframes |
-| `09-microservices/` → what APIs the frontend consumes | What data arrives at each screen |
+- **`navigation-map.md`**: El mapa de todas las pantallas/páginas, estructura de rutas por rol y matriz de acceso.
+- **`design-system.md`**: Sistema de diseño de FixGo (tokens visuales, colores corporativos, tipografía, componentes y patrones de error).
+- **`wireframes.md`**: Representación estructural de las pantallas críticas (Solicitud de Auxilio y Rastreo GPS).
 
 ---
 
-## Questions this section must answer
+## Matriz de Resumen de Pantallas y Roles
 
-- How many screens does the system have?
-- How does each type of user navigate?
-- What visual components are repeated?
-- What is the system's visual language?
+| Pantalla / Ruta   | Conductor | Taller / Mecánico | Admin | Servicio Backend    |
+| ----------------- | --------- | ----------------- | ----- | ------------------- |
+| `/` (Landing)     | ✅        | ✅                | ✅    | —                   |
+| `/auth/login`     | ✅        | ✅                | ✅    | auth-service        |
+| `/dashboard`      | ✅        | ✅                | ✅    | assistance-service  |
+| `/assistance/new` | ✅        | ❌                | ❌    | assistance-service  |
+| `/assistance/:id` | ✅        | ✅                | ✅    | geolocation-service |
+| `/workshops`      | ✅        | ❌                | ✅    | workshop-service    |
+| `/admin`          | ❌        | ❌                | ✅    | auth-service        |
+
+---
+
+## Preguntas Clave Resueltas
+
+- **¿Cuántas pantallas tiene el sistema?** 8 pantallas principales divididas entre área pública, conductores, talleres y administración.
+- **¿Cómo navega cada usuario?** A través de un flujo optimizado en tres pasos: Geolocalización $\rightarrow$ Selección de Servicio $\rightarrow$ Rastreo GPS en tiempo real.
+- **¿Cuál es el lenguaje visual?** Colores de alto contraste (**Azul Mecánico `#0052CC`** para acciones clave y **Amarillo Emergencia `#FFAB00`** para alertas y auxilio).
+
+---
+
+## Correlaciones
+
+| Esta sección se alimenta de...                         | Y alimenta a...                                 |
+| ------------------------------------------------------ | ----------------------------------------------- |
+| `04-requirements/user-stories.md` → Qué flujos existen | Desarrollo Frontend (React / Flutter)           |
+| `02-domain/entities-and-rules.md` → Qué datos mostrar  | Campos en formularios y tarjetas de taller      |
+| `07-api/` → Endpoints que consume la interfaz          | Integración de servicios y mapas en tiempo real |
