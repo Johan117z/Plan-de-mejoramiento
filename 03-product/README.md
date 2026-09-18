@@ -1,76 +1,61 @@
-# 03 — Product Definition
+# 03 — Product Definition — FixGo Platform
 
 > **What is this?** The answer to "what are we going to build?". It is not "how" — that comes in
-> architecture. Here the validated problem, product vision, and build plan are defined.
+> architecture. Here the validated problem, product vision, and build plan for FixGo are defined.
 
 ## Why this section exists
 
 Without a clear product definition:
+
 - The team builds features nobody asked for
 - Scope grows out of control (scope creep)
 - There is no way to know whether the project was successful
 
-This section is the contract between the team and stakeholders about **what will be built and why**.
+This section is the contract between the team and stakeholders about **what will be built and why** for the FixGo ecosystem.
 
 ---
 
 ## What is here and how to fill it in
 
 ### `problem-framing.md` ⭐ (Start here)
+
 Articulates the problem before proposing solutions.
-**Fill in:** who has the problem, exactly what pain, evidence of the problem, how they solve it today.
-
-**Format:**
-```markdown
-## The problem
-**Who has it?** [Profile of the affected user]
-**What problem do they have?** [Description of the pain, specific]
-**When does it occur?** [Situation that triggers the problem]
-**What is the impact?** [Concrete consequence: time, money, frustration]
-**How do they solve it today?** [Current workaround and why it is insufficient]
-
-## Why it is worth solving
-[Justification for the value of building this system]
-```
+**Fill in:** stranded drivers and service providers, assistance delays, evidence, current workarounds.
 
 ### `discovery-brief.md`
-Findings from user research.
-**Fill in:** interviews conducted, insights found, assumptions validated and invalidated.
+
+Findings from user research with drivers, mechanics, and tow operators.
+**Fill in:** interviews conducted, key insights, assumptions validated/invalidated regarding roadside assistance.
 
 ### `vision.md` ⭐
+
 The product's north star in 1-2 sentences.
-**Fill in:** format "For [user], who [need], [system name] is a [product type]
-that [key benefit]. Unlike [alternative], our product [differentiator]."
+**Fill in:** core value proposition positioning FixGo against traditional phone/call-center dispatching.
 
 ### `roadmap.md`
-Delivery plan over time.
-**Fill in:** milestones per quarter/sprint, which features go into each phase.
 
-**Format:**
-```markdown
-## Phase 1 — MVP (Sprint 1-3)
-- [Critical feature 1]
-- [Critical feature 2]
-
-## Phase 2 — Iteration (Sprint 4-6)
-- [Improvements based on feedback]
-```
+Delivery plan over time across development sprints.
+**Fill in:** MVP milestones (geolocation, dispatching, tracking) and post-MVP enhancements.
 
 ### `product-backlog.md` ⭐
-Prioritized list of everything that must be built.
-**Fill in:** using the `_template-backlog.md` template. Order by user value.
+
+Prioritized list of user stories (HUs) that must be built for FixGo.
+**Fill in:** ordered by user value and operational necessity.
 
 ### `_template-prd.md`
-Complete Product Requirements Document.
-**Use when:** you need to formalize requirements for an external stakeholder or academic delivery.
+
+Complete Product Requirements Document for external stakeholders or academic deliverables.
 
 ### `_template-discovery-brief.md`
-Template for documenting user research.
+
+Template for documenting roadside user research.
 
 ### `_template-problem-framing.md`
-Structured template for framing the problem.
+
+Structured template for framing roadside assistance problems.
 
 ### `_template-backlog.md`
+
 Template for initial backlog user stories.
 
 ---
@@ -79,35 +64,19 @@ Template for initial backlog user stories.
 
 ```markdown
 ## HU-[SERVICE]-[NNN]: [Title]
+
 **As** [user role]
 **I want** [action they want to perform]
 **So that** [benefit they receive]
 
 ### Acceptance criteria
+
 - [ ] AC1: Given [context], when [action], then [expected result]
 - [ ] AC2: ...
 
 ### Technical notes
+
 [Constraints or implementation considerations]
 
-**Estimation:** [SP]  **Priority:** [High/Medium/Low]
+**Estimation:** [SP] **Priority:** [High/Medium/Low]
 ```
-
----
-
-## Correlations with other sections
-
-| This section feeds... | Why |
-|-----------------------|-----|
-| `04-requirements/` | Backlog HUs are formalized as requirements |
-| `02-domain/` | Problem framing reveals domain entities |
-| `15-project-control/technical-backlog.md` | Technical debt identified during definition |
-
----
-
-## Questions this section must answer
-
-- What problem exactly are we solving?
-- What does product success look like?
-- What do we build first and why?
-- What do we NOT build in this cycle?

@@ -1,4 +1,4 @@
-# User Stories — Backlog
+# User Stories — Backlog (FixGo Platform)
 
 > **What to fill in here:** The product's User Story backlog.
 > Each HU uses the standard format with Acceptance Criteria in Given/When/Then.
@@ -8,165 +8,64 @@
 
 ## Backlog status
 
-| Cut | Sprint | Total HUs | Refined | In progress | Completed |
-|-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | [N] | [N] | [N] | [N] |
-| Cut 2 | Sprint 3-4 | [N] | [N] | [N] | [N] |
+| Cut   | Sprint     | Total HUs | Refined | In progress | Completed |
+| ----- | ---------- | --------- | ------- | ----------- | --------- |
+| Cut 1 | Sprint 1-2 | 4         | 4       | 2           | 1         |
+| Cut 2 | Sprint 3-4 | 3         | 1       | 0           | 0         |
 
 ---
 
 ## Epics
 
-| ID | Epic | Description |
-|----|------|-------------|
-| EP-001 | [Epic name] | [Brief description of the epic's objective] |
-| EP-002 | [Name] | [Description] |
+| ID     | Epic                            | Description                                                                                              |
+| ------ | ------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| EP-IAM | Authentication & Identity       | User registration, login, JWT issuance, and role management for Drivers, Mechanics, and Workshop Admins. |
+| EP-LOC | Emergency Assistance & Dispatch | Real-time GPS location tracking, spatial queries, tow truck dispatch, and active route updates.          |
+| EP-PAY | Service Payments & Invoicing    | Secure transaction processing, payment gateway integration, and electronic service receipts.             |
 
 ---
 
 ## User Stories
 
-### HU-001 — [Descriptive name] {#HU-001}
+### HU-IAM-001 — User Authentication & Role Assignment {#HU-IAM-001}
 
-**Epic:** EP-00X
+**Epic:** EP-IAM
 
-> **As** [user role]
-> **I want** [action / feature]
-> **so that** [benefit / value received]
-
-**Acceptance Criteria:**
-
-```gherkin
-Scenario 1: [Scenario name — happy path]
-  Given [initial context]
-  When  [user action]
-  Then  [expected result]
-  And   [additional condition if applicable]
-
-Scenario 2: [Scenario name — edge case / error]
-  Given [context]
-  When  [action]
-  Then  [error result, e.g.: validation message is shown]
-```
-
-**Definition of Done:**
-- [ ] Code reviewed and approved
-- [ ] Unit tests written
-- [ ] Acceptance criteria verified (manual or automated)
-- [ ] API contract updated if applicable
-- [ ] Deployed to staging
-
-| Field | Value |
-|-------|-------|
-| Story Points | [1 / 2 / 3 / 5 / 8 / 13] |
-| Priority | [Must Have / Should Have / Could Have] |
-| Target sprint | Sprint [N] |
-| Assigned to | [Name] |
-| Status | [Backlog / Ready / In Progress / Done] |
-| Dependencies | [HU-00X, HU-00Y] |
-| Affected service(s) | [service-name] |
-
----
-
-### HU-002 — [Descriptive name] {#HU-002}
-
-**Epic:** EP-00X
-
-> **As** [role]
-> **I want** [action]
-> **so that** [benefit]
+> **As a** registered driver or mechanic  
+> **I want to** authenticate with my credentials and receive a secure token  
+> **So that** I can access role-specific roadside features securely
 
 **Acceptance Criteria:**
 
 ```gherkin
-Scenario 1: [Happy path]
-  Given [context]
-  When  [action]
-  Then  [result]
+Scenario 1: Successful user authentication
+  Given a registered driver enters valid credentials (email and password)
+  When they send a login request to the system
+  Then the system responds with a HTTP 200 status and a valid JWT access token (1-hour expiration)
+  And the token contains the user's role claim ("DRIVER")
 
-Scenario 2: [Error case]
-  Given [context]
-  When  [invalid action]
-  Then  error "[error code]" is shown with message "[message]"
-```
+Scenario 2: Invalid authentication credentials
+  Given a user enters an unverified email or incorrect password
+  When they submit the login form
+  Then the system responds with HTTP 401 Unauthorized
+  And displays the error message "Invalid credentials"
+Gherkin
+Scenario 1: Successful roadside assistance dispatch
+  Given an authenticated driver with active device GPS
+  When they select "Tow Service" and confirm their current coordinates
+  Then the system records the geo-location point
+  And broadcasts an emergency dispatch alert to all active tow operators within a 10km radius
 
-| Field | Value |
-|-------|-------|
-| Story Points | [N] |
-| Priority | [Must Have] |
-| Target sprint | Sprint [N] |
-| Status | [Backlog] |
-
+Scenario 2: Request creation fails due to missing location
+  Given a driver with disabled location services
+  When they attempt to request emergency assistance
+  Then the system blocks the submission
+  And prompts the message "GPS precision required to locate your vehicle"
+Gherkin
+Scenario 1: Live movement update via WebSocket
+  Given a mechanic has accepted a dispatch request and is en route
+  When the mechanic moving vehicle updates its GPS coordinates
+  Then the driver receives real-time position updates over WebSocket every 5 seconds
+  And the map marker updates smoothly without full page refresh
 ---
-
-## Rules for writing HUs
-
-### 1. The role matters
-Do not write "As a user" — that says nothing. Use the specific role:
 ```
-✓ As a system administrator
-✓ As a registered customer
-✓ As an inventory operator
-✗ As a user
-✗ As a person
-```
-
-### 2. The benefit justifies the work
-The "so that" must describe a business benefit, not redescribe the action:
-```
-✓ so that I can manage my orders without calling support
-✗ so that I can see my orders (this only describes the feature)
-```
-
-### 3. ACs are verifiable
-Each AC must be verifiable manually or automatable as a test:
-```
-✓ Then the system shows a message "Order #123 confirmed"
-✓ Then the confirmation email arrives in less than 30 seconds
-✗ Then the system works well (not verifiable)
-✗ Then the user is satisfied (not verifiable)
-```
-
-### 4. One HU = one unit of value
-If the HU has 15 ACs, it is probably 3 HUs.
-The team must be able to complete it in one sprint (maximum 2 weeks).
-
----
-
-## Ready-to-copy HU template
-
-```markdown
-### HU-00X — [Name] {#HU-00X}
-
-**Epic:** EP-00X
-
-> **As** [role]
-> **I want** [action]
-> **so that** [benefit]
-
-**Acceptance Criteria:**
-
-\```gherkin
-Scenario 1: [name]
-  Given [context]
-  When  [action]
-  Then  [result]
-\```
-
-| Field | Value |
-|-------|-------|
-| Story Points | |
-| Priority | |
-| Target sprint | |
-| Status | Backlog |
-| Dependencies | |
-```
-
----
-
-## Correlations
-
-- Full template with DoD checklist → `04-requirements/_template-hu.md`
-- Non-functional requirements → `04-requirements/non-functional.md`
-- Traceability matrix → `04-requirements/traceability-matrix.md`
-- API contracts derived from these HUs → `07-api/contracts/openapi/`

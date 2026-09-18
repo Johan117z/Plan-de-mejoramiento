@@ -1,4 +1,4 @@
-# Traceability Matrix
+# Traceability Matrix - FixGo Platform
 
 > Traceability connects every line of code to its business justification.
 > It allows answering: "Why does this function exist?" and "Which HU covers this part of the system?"
@@ -8,58 +8,49 @@
 
 ## How to use this matrix
 
-```
-Requirement → HU → Test Case → Implementation → Service
-
-If a requirement has no HU: it is not planned
-If a HU has no test case: it has no completeness criterion
-If a test case has no implementation: there is test technical debt
-If there is code without an HU: possible gold-plating or bug introduced without a story
-```
-
 ---
 
 ## FR → HU → Test → Service matrix
 
-| FR ID | FR Description | HU(s) | Tests that verify it | Service | Status |
-|-------|---------------|-------|---------------------|---------|--------|
-| FR-001 | [System allows user registration] | HU-001 | `auth.register.spec.ts` | auth-service | ✅ Done |
-| FR-002 | [System allows authentication] | HU-002 | `auth.login.spec.ts` | auth-service | ✅ Done |
-| FR-003 | [System allows creating orders] | HU-003, HU-004 | `order.create.spec.ts` | order-service | 🟡 In progress |
-| FR-004 | [System sends email notifications] | HU-010 | `notifications.spec.ts` | notification-service | 🔴 Pending |
-| FR-00X | [description] | [HU-00X] | [test file] | [service] | [status] |
+| FR ID  | FR Description                                        | HU(s)      | Tests that verify it       | Service                  | Status         |
+| ------ | ----------------------------------------------------- | ---------- | -------------------------- | ------------------------ | -------------- |
+| FR-001 | Broadcast emergency request within 10km radius        | HU-LOC-001 | `dispatch.service.spec.ts` | `fixgo-dispatch-service` | 🟡 In progress |
+| FR-002 | Authenticate users and validate roles                 | HU-IAM-001 | `auth.jwt.spec.ts`         | `fixgo-iam-service`      | ✅ Done        |
+| FR-003 | Stream real-time mechanic GPS location via WebSockets | HU-LOC-002 | `location.socket.spec.ts`  | `fixgo-location-service` | 🟡 In progress |
+| FR-004 | Process service payment via gateway integration       | HU-PAY-001 | `payment.gateway.spec.ts`  | `fixgo-payment-service`  | 🔴 Pending     |
 
 ---
 
 ## NFR → Validation matrix
 
-| NFR ID | Description | How it is validated | Tool | Status |
-|--------|-------------|-------------------|------|--------|
-| NFR-001 | P95 < 300ms | Load test in staging | k6 | ✅ Validated |
-| NFR-002 | 99.9% availability | SLO monitoring | Grafana | 🟡 Monitoring |
-| NFR-004 | JWT authentication | Security contract test | Postman + OWASP ZAP | 🔴 Pending |
+| NFR ID  | Description                               | How it is validated                  | Tool                 | Status         |
+| ------- | ----------------------------------------- | ------------------------------------ | -------------------- | -------------- |
+| NFR-001 | Geospatial query latency P95 < 250ms      | Automated load testing in staging    | k6                   | 🟡 In progress |
+| NFR-002 | System availability 99.9% SLO             | Health probes & SLO dashboards       | Grafana + Prometheus | 🟡 Monitoring  |
+| NFR-004 | JWT authentication with 1-hour expiration | Security contract & integration test | Postman + OWASP ZAP  | ✅ Validated   |
 
 ---
 
 ## Inverse traceability: HU → FR
 
-| HU | Title | FR(s) it implements | Sprint |
-|----|-------|---------------------|--------|
-| HU-001 | [User registration] | FR-001 | Sprint 1 |
-| HU-002 | [Login] | FR-002 | Sprint 1 |
-| HU-003 | [Create basic order] | FR-003 | Sprint 2 |
+| HU         | Title                                 | FR(s) it implements | Sprint   |
+| ---------- | ------------------------------------- | ------------------- | -------- |
+| HU-IAM-001 | User Authentication & Authorization   | FR-002              | Sprint 1 |
+| HU-LOC-001 | Request Emergency Roadside Assistance | FR-001              | Sprint 1 |
+| HU-LOC-002 | Real-time Mechanic GPS Tracking       | FR-003              | Sprint 2 |
+| HU-PAY-001 | Process Service Payment               | FR-004              | Sprint 3 |
 
 ---
 
 ## Status legend
 
-| Status | Meaning |
-|--------|---------|
-| ✅ Done | Implemented, tested, and in production |
+| Status         | Meaning                                 |
+| -------------- | --------------------------------------- |
+| ✅ Done        | Implemented, tested, and in production  |
 | 🟡 In progress | Under development in the current sprint |
-| 🔴 Pending | In the backlog, not started |
-| ⏸ Blocked | Has an external blocker |
-| ❌ Cancelled | Removed from scope |
+| 🔴 Pending     | In the backlog, not started             |
+| ⏸ Blocked      | Has an external blocker                 |
+| ❌ Cancelled   | Removed from scope                      |
 
 ---
 
@@ -68,10 +59,10 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 > This section is updated automatically or manually when reviewing the matrix.
 > A gap is: an FR without an HU, or an HU without a test, or a test without implementation.
 
-| Gap type | Description | Required action | Owner | Date |
-|----------|-------------|----------------|-------|------|
-| FR without HU | FR-00X has no associated HU | Create HU in the backlog | Product Owner | [date] |
-| HU without test | HU-00X has no acceptance test | Add test before the next sprint | QA / Dev | [date] |
+| Gap type        | Description                                         | Required action                         | Owner            | Date       |
+| --------------- | --------------------------------------------------- | --------------------------------------- | ---------------- | ---------- |
+| HU without test | HU-LOC-002 lacks WebSocket disconnect recovery test | Add socket reconnection test case       | Development Team | 2026-09-18 |
+| Pending FR      | FR-004 has no assigned test cases yet               | Write integration tests before Sprint 3 | QA / Dev         | 2026-09-18 |
 
 ---
 
