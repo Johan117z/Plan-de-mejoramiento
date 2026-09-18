@@ -1,82 +1,85 @@
-# ADR-001 — Documentation Language
+# ADR-001 — Documentation Language Standard for FixGo
 
-| Field | Value |
-|-------|-------|
-| **ID** | ADR-001 |
-| **Date** | 2024-01-10 |
-| **Status** | Accepted |
-| **Authors** | María García — Tech Lead |
-| **Reviewers** | Carlos Méndez, Sofía Torres, Andrés Ruiz — Development team |
+- **ID:** ADR-001
+- **Date:** 2026-09-18
+- **Status:** Accepted
+- **Authors:** Johan Andrés Liñan Esquivel, Juan David Romero Calderón, Gabriel Tijaro Jiménez, Mateo Esteban Ramírez Garzón
 
 ---
 
 ## Context
 
-The software industry standard — Stack Overflow, library documentation, technical articles,
-frameworks, and open-source tooling — operates in English. Mixing languages across artifacts
-(Spanish docs, English code, Spanish API descriptions) creates a cognitive translation
-boundary that slows onboarding, increases errors in naming, and makes it harder to search
-for help online.
+The software engineering industry standard—including framework documentations, open-source tools, API specs, and AI copilots—operates predominantly in English. Mixing languages across project artifacts (e.g., Spanish architectural docs alongside English Java/Python code) creates a cognitive translation boundary. This friction slows down developer onboarding, introduces naming inconsistencies, and degrades searchability across repository tools and CI/CD pipelines.
 
-A single, clear rule established from day one prevents inconsistencies: mismatched variable
-names, Spanish comments in English code, and conflicting terminology between documentation
-and implementation.
+Establishing a single, explicit documentation language rule from day one prevents mismatched variable names, inconsistent commit messages, and conflicting domain terminology across the FixGo platform.
 
----
+**Known constraints:**
 
-## Evaluated alternatives
-
-### Alternative A — Everything in English (CHOSEN)
-- **Pros:** Industry standard; easy to hire external developers; libraries and frameworks are in English; technical reference documentation is in English; eliminates the translation boundary between docs and code; GitHub, Stack Overflow, and AI tools all work best with English content
-- **Cons:** May require slightly more effort from team members who are not native English speakers
-
-### Alternative B — Everything in Spanish
-- **Pros:** Natural communication with Spanish-speaking clients; business domain names preserved exactly
-- **Cons:** Uncomfortable mix with language keywords (if, for, return, etc.); inconsistent with the library ecosystem; external contributors cannot participate
-
-### Alternative C — Split by layer (discarded)
-- **Pros:** Each artifact uses the most natural language for its audience
-- **Cons:** Requires strict discipline and explicit rules; harder to explain to new team members; creates a permanent translation boundary between docs (Spanish) and code (English); domain terms accumulate two canonical names
+- All team members must align on a canonical domain glossary for FixGo business terms (e.g., drivers, workshop owners, tow dispatch, roadside assistance).
+- Technical documentation must adhere strictly to repository governance standards (`00-governance/`).
 
 ---
 
 ## Decision
 
-**Alternative A:** Use English for all documentation and code.
+**We decided:** Adopt **English** as the single canonical language for all codebase artifacts, documentation files, database schemas, API contracts, and version control messages across the FixGo ecosystem.
 
-| Artifact | Language | Reason |
-|----------|----------|--------|
-| Variables, functions, classes in code | English | Consistency with libraries and frameworks |
-| Table and column names in DB | English | Coherence with the code that maps them |
-| Commits (Conventional Commits) | English | Established standard, readable on GitHub |
-| Git branch names | English | Consistent with commits |
-| Markdown documentation | English | Eliminates the translation boundary; searchable |
-| OpenAPI contracts (descriptions) | English | Readable by any future contributor |
-| End-user error messages | English (or localized) | Localization layer handles language at runtime |
-| Internal system logs | English | Facilitates search in library documentation and alerts |
-| ADRs and technical documentation | English | Single source of truth, no translation boundary |
+**Justification:**
+Using English eliminates the translation boundary between source code, system architecture, and external dependencies. It guarantees consistency across technical artifacts, GitHub Pull Requests, and automated tools.
+
+---
+
+## Evaluated alternatives
+
+| Alternative                              | Pros                                                                                                                                             | Cons                                                                                                                                | Reason for discarding                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Everything in English (Chosen)**       | Industry standard; seamless integration with frameworks, libraries, CI/CD tools, and AI assistants; eliminates cognitive translation boundaries. | Initial effort required for team members accustomed to writing docs in Spanish.                                                     | — (chosen)                                                                              |
+| **Everything in Spanish**                | Native language for team members; direct alignment with local business stakeholders.                                                             | Clunky mix with code syntax (`public class TallerMecanico`); inconsistent with third-party libraries; limits open-source potential. | Disrupts code readability and creates friction with development frameworks.             |
+| **Hybrid (Spanish Docs / English Code)** | Lower barrier for initial documentation drafting.                                                                                                | High risk of domain drift; requires maintaining two sets of domain terms; complicates API contract definitions.                     | Creates permanent translation debt between architecture specifications and source code. |
+
+---
+
+## Decision Matrix by Artifact
+
+| Artifact                                    | Language | Canonical Guideline                                                            |
+| ------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| Codebase (Variables, Classes, Methods)      | English  | Strictly follow language style guides and clean code conventions.              |
+| Database Schemas (Tables, Columns, Indexes) | English  | Mirror domain entities (e.g., `workshops`, `assistance_requests`).             |
+| Git Commits & Branch Names                  | English  | Enforce Conventional Commits (`feat(dispatch): add driver location tracking`). |
+| System Documentation (`.mdux`, `.md`)       | English  | Keep single source of truth across all architectural modules.                  |
+| OpenAPI Contracts & API Specs               | English  | All endpoint descriptions, query params, and JSON schemas in English.          |
+| Internal Logs & Observability Metrics       | English  | Ensure fast searching and indexing in centralized logging tools.               |
 
 ---
 
 ## Consequences
 
 **Positive:**
-- A single language across all artifacts eliminates the cognitive translation boundary
-- New team members have one clear rule from day 1
-- External contributors and AI tools work without friction
-- Domain terms have one canonical form (the English one in the code)
 
-**Negative:**
-- Team members who are less confident in English need to invest more initially
-- Some business terms may require careful translation decisions
+- Eliminates cognitive switching between Spanish documentation and English source code.
+- Establishes a clean, professional standard across GitHub pull requests and commit history.
+- Accelerates integration with external SDKs (Mapbox, PostgreSQL/PostGIS, RabbitMQ).
 
-**Mitigation:**
-- Maintain a domain glossary with the canonical English translation for each business term: `01-context/glossary.md`
-- When a term has a debatable translation, document it in the glossary before using it in code
+**Negative / Trade-offs:**
+
+- Requires careful translation of local business domain terms prior to usage.
+
+**Impact on the system:**
+
+- Affected services: All FixGo microservices (`fixgo-iam-service`, `fixgo-dispatch-service`, `fixgo-location-service`, `fixgo-workshop-service`).
+- Documents that must be updated: `01-context/glossary.mdux`, `00-governance/documentation-rules.mdux`.
+
+---
+
+## Risks
+
+| Risk                                                       | Probability | Impact | Mitigation                                                                        |
+| ---------------------------------------------------------- | ----------- | ------ | --------------------------------------------------------------------------------- |
+| Misinterpretation or ambiguous translation of domain terms | Medium      | Medium | Maintain and consult the canonical domain glossary in `01-context/glossary.mdux`. |
 
 ---
 
 ## References
 
-- Team documentation conventions → `00-governance/documentation-rules.md`
-- Domain term glossary → `01-context/glossary.md`
+- Domain Glossary → `01-context/glossary.mdux`
+- Governance Documentation Rules → `00-governance/documentation-rules.mdux`

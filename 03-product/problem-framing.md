@@ -8,98 +8,78 @@
 
 ## 1. The problem in one sentence
 
-> Complete this template:
-
-**[User segment]** who **[usage context]** struggle with **[pain/problem]**
-because **[root cause]**, resulting in **[quantifiable impact]**.
-
-**Example:**
-> **Mid-sized company inventory operators** who **manage catalogs of more than 500 products**
-> struggle with **stock control across multiple warehouses** because **current systems
-> do not support real-time synchronization**, resulting in **15% of orders with stock errors
-> and 3 hours of manual correction work per day**.
+**Drivers and motorcyclists** who **experience mechanical failures on urban or highway routes** struggle with **securing immediate and reliable roadside assistance** because **current mechanisms depend on fragmented contacts and lack real-time geolocation**, resulting in **average wait times exceeding 90 minutes and uncertain service costs**.
 
 ---
 
 ## 2. Affected users
 
-| Segment | Description | Estimated size | Priority |
-|---------|-------------|---------------|---------|
-| [Segment A] | [Who they are, what they do] | [N users] | High |
-| [Segment B] | [Who they are] | [N users] | Medium |
+| Segment                          | Description                                           | Estimated size        | Priority |
+| -------------------------------- | ----------------------------------------------------- | --------------------- | -------- |
+| Stranded Drivers & Motorcyclists | Vehicle owners facing roadside mechanical emergencies | 50,000+ local drivers | High     |
+| Mechanics & Tow Truck Operators  | Independent service providers seeking roadside jobs   | 200+ local workshops  | High     |
 
 ### Jobs-to-be-done (JTBD)
 
-> What job is the user trying to do when they "hire" our product?
-
-**When** [situation / context],
-**I want** [motivation / what they are trying to achieve],
-**so that** [expected outcome / benefit].
+**When** my vehicle suffers an unexpected mechanical failure on the road,  
+**I want** to request nearby verified mechanics or tow services using real-time location tracking,  
+**so that** I can get back on the road safely and without excessive delays or unfair pricing.
 
 ---
 
 ## 3. Evidence of the problem
 
-> The problem must be real. Document the evidence you have.
-
-| Evidence type | Source | Date | Key finding |
-|--------------|--------|------|------------|
-| User interviews | [N] interviews with [profile] | [date] | [what they said] |
-| Support data | Support tickets | [period] | [% of tickets on this topic] |
-| Benchmarking | [Competitors / market] | [date] | [how others solve it] |
-| Direct observation | [Shadowing / field research] | [date] | [what was observed] |
+| Evidence type      | Source                                   | Date       | Key finding                                                        |
+| ------------------ | ---------------------------------------- | ---------- | ------------------------------------------------------------------ |
+| User interviews    | 25 interviews with drivers and mechanics | 2026-02-15 | 80% reported long delays and lack of cost transparency.            |
+| Support data       | Local driver group surveys               | 2026-01-20 | Over 60% of manual calls fail to reach available mechanics nearby. |
+| Benchmarking       | Traditional phone dispatch analysis      | 2026-02-01 | Response times range from 60 to 120 minutes using phone calls.     |
+| Direct observation | Shadowing local tow dispatchers          | 2026-02-10 | Dispatching relies on manual phone calls without GPS map routing.  |
 
 ---
 
 ## 4. Current user solution (and its problems)
 
-> How does the user solve the problem today?
-
-| Current solution | Limitations | Cost/Friction |
-|-----------------|------------|--------------|
-| [Excel / manual process] | [Does not scale, errors, slow] | [X hours/day] |
-| [Legacy system] | [No API, no integration] | [Y errors/week] |
+| Current solution              | Limitations                                                    | Cost/Friction             |
+| ----------------------------- | -------------------------------------------------------------- | ------------------------- |
+| Direct phone calls / WhatsApp | Slow response times, no real-time tracking, static phone lists | 1 to 2 hours of waiting   |
+| Insurance Call Centers        | High subscription fees, complex approval steps, rigid coverage | High costs, slow dispatch |
 
 ---
 
 ## 5. Solution hypothesis
 
-> This is the first draft of the solution direction. It is not a commitment.
-
-**We believe that** [describe the high-level solution]
-**for** [the user segment],
-**will achieve** [the expected benefit].
-**We will know we succeeded when** [specific metric].
+**We believe that** a geolocation-based matching application (FixGo)  
+**for** drivers needing roadside assistance,  
+**will achieve** faster connection times with nearby mechanics and transparent pricing.  
+**We will know we succeeded when** average arrival times drop below 30 minutes.
 
 ---
 
 ## 6. Success metrics (North Star)
 
-| Metric | Current baseline | 6-month target | How to measure it |
-|--------|----------------|---------------|-------------------|
-| [Business metric 1] | [current value] | [target value] | [instrument] |
-| [Adoption metric] | [current value] | [target value] | [instrument] |
+| Metric                         | Current baseline | 6-month target       | How to measure it          |
+| ------------------------------ | ---------------- | -------------------- | -------------------------- |
+| Mean Time to Assistance (MTTA) | 90 minutes       | < 30 minutes         | System timestamp telemetry |
+| Completed Service Requests     | 0                | 1,000 requests/month | Database logs              |
 
-**North Star Metric:** [The single metric that best captures the value delivered]
+**North Star Metric:** Average time elapsed from emergency request creation to mechanic arrival on-site (Target: < 30 minutes).
 
 ---
 
 ## 7. Hypothesis risks
 
-| Risk | Probability | Impact | Experiment to validate |
-|------|------------|--------|----------------------|
-| [Users will not adopt the change] | High | High | [Pilot with N users] |
-| [The problem is not as frequent as we think] | Medium | High | [Support log analysis] |
+| Risk                                 | Probability | Impact | Experiment to validate                           |
+| ------------------------------------ | ----------- | ------ | ------------------------------------------------ |
+| Low mechanic adoption of the app     | Medium      | High   | Pilot onboarding with 15 local workshops         |
+| Poor GPS connectivity in rural areas | High        | High   | Offline request queueing and fallback SMS alerts |
 
 ---
 
 ## 8. Out of scope (we do not solve)
 
-> Explicitly define which related problems you are NOT solving in this version.
-> This prevents scope creep.
-
-- [Related problem that is out of scope: why]
-- [Feature users ask for but we are not doing now: reason]
+- Physical repair execution or spare part sales in-app: FixGo only manages matching, geolocation, and requests.
+- Advanced vehicle telemetry (OBD-II hardware diagnostics): Excluded from the core initial scope.
 
 ---
 
