@@ -1,113 +1,50 @@
-# 05 — Architecture
+# 05 — Architecture Specifications & System Design — FixGo Platform
 
-> **What is this?** The system's design decisions: how it is organized, why,
-> what alternatives were evaluated, and how it is deployed. ADRs are the treasure of this section.
-
-## Why this section exists
-
-A system's architecture is the set of decisions that are hard to change later.
-Documenting them has three benefits:
-1. **New team members** understand the system without having to ask everything from scratch
-2. **The team** does not repeat already-resolved discussions
-3. **Years later**, everyone remembers why each decision was made
+> **What is this?** This directory contains the complete technical snapshot and architectural design decisions for the **FixGo** platform. It details how the system is organized, the design patterns applied across microservices, deployment models, and the Architectural Decision Records (ADRs) that justify technology choices.
 
 ---
 
-## What is here and how to fill it in
+## Executive Overview
 
-### `overview.md` ⭐ (Start here)
-High-level view of the complete system.
-**Fill in:** C4 Level 1 (System) and Level 2 (Container) diagram, list of microservices with
-each one's responsibility, how they communicate (sync/async), technologies per layer.
+## FixGo's architecture is built as a **Microservices & Event-Driven Platform** tailored for low-latency emergency dispatch, real-time vehicle telemetry tracking, and scalable service order management. It strictly enforces **Hexagonal Architecture (Ports & Adapters)** within each microservice boundary to guarantee technology independence.
 
-**Recommended format:**
-```markdown
-## Architecture diagram
-[ASCII diagram, Mermaid, or reference to image in assets/]
+## Directory Index & Navigation Guide
 
-## Microservices
-| Service | Responsibility | Technology | DB |
-|---------|--------------|------------|-----|
-| [name] | [what it does] | [stack] | [engine] |
+### 1. `overview.md` ⭐ (Start Here)
 
-## Communication patterns
-- Sync: [what uses REST between which services]
-- Async: [what uses events/messages between which services]
-- Gateway: [how external requests arrive]
-```
+Provides the overall system architecture, C4 Level 1 (Context) and Level 2 (Container) diagrams, the complete service catalog (IAM, Dispatch, Location, Workshop, Notification), and core architectural principles (API-First, Database-per-Service).
 
-### `deployment.md` ⭐
-How the system is deployed in each environment.
-**Fill in:** infrastructure diagram, what goes in Docker/K8s, network configuration, hardware requirements.
+### 2. `hexagonal-architecture.md`
 
-### `cross-cutting.md`
-Concerns that apply to all microservices.
-**Fill in:** standard logging, distributed tracing, centralized configuration, feature flags,
-error handling, retry policies.
+Specifies how the **Ports and Adapters** pattern is structured across FixGo's codebase (`domain/`, `application/`, and `infrastructure/` boundaries) to isolate domain business logic from PostGIS, WebSockets, or third-party SDKs like Mapbox and FCM.
 
-### `pattern-guide.md`
-Catalog of design patterns used in the project.
-**Fill in:** for each pattern: name, when to use it, when NOT to use it, concrete example from the project.
+### 3. `pattern-guide.md`
 
-### `security-threat-model.md`
-Security threat analysis of the system.
-**Fill in:** using the STRIDE methodology: Spoofing, Tampering, Repudiation, Information Disclosure,
-Denial of Service, Elevation of Privilege. For each threat: implemented mitigation.
+Catalog of software design patterns (GoF) and microservices architectural patterns (API Gateway, Outbox Pattern, Choreographed Saga, Circuit Breakers) adopted throughout FixGo, specifying when and how to implement them.
 
-### `decisions/` ⭐⭐ — Architecture Decision Records (ADRs)
+### 4. `decisions/` ⭐⭐ — Architecture Decision Records (ADRs)
 
-#### What is an ADR?
-A record of ONE important architectural decision: what was decided, why, what alternatives
-were evaluated, and what the consequences are. They are **short documents** (1-2 pages).
+Formal log recording critical design decisions, alternatives evaluated, and project consequences:
 
-**When to create an ADR:**
-- When choosing a message broker (RabbitMQ vs Kafka vs Redis Streams)
-- When deciding the database strategy (one per service vs shared)
-- When choosing a communication pattern (REST vs gRPC vs events)
-- When choosing an authentication library
-- Any decision that, if changed, requires significant refactoring
-
-**When NOT to create an ADR:**
-- Day-to-day operational decisions
-- Things that can be changed easily without systemic impact
-
-**Use `decisions/_template-adr.md`**
-
-**Typical ADR examples:**
-```
-ADR-001-documentation-language.md  → Why English for all documentation
-ADR-002-auth-strategy.md           → Why JWT and not sessions
-ADR-003-database-per-service.md    → Why separate DB per service
-ADR-004-api-gateway.md             → Why Kong and not custom NGINX
-```
+- [`ADR-001`](decisions/records/0001-postgis-geospatial.md): Selection of PostgreSQL + PostGIS for spatial queries.
+- [`ADR-002`](decisions/records/0002-jwt-authentication.md): Stateless JWT strategy for driver, mechanic, and workshop access.
 
 ---
 
-## Correlations with other sections
+## Core Architectural Principles for FixGo
 
-| This section is fed by... | And feeds... |
-|--------------------------|-------------|
-| `02-domain/domain-map.md` → bounded contexts | `09-microservices/` → one service per context |
-| `04-requirements/non-functional.md` → NFRs | Decisions about technology and scale |
-| ADRs chosen here | `09-microservices/` implements the decided patterns |
-| `deployment.md` | `10-devops/environments.md` |
+1. **Database per Service:** No microservice directly queries another service's database. Data sharing occurs solely via REST APIs or domain events.
+2. **Geospatial Efficiency:** All location telemetry and radius searches utilize standard Spatial Reference Identifiers (`SRID 4326 - WGS 84`) indexed with GIST.
+3. **Resiliency by Design:** External failures (e.g., Mapbox routing downtime) fallback gracefully via Circuit Breakers without blocking active dispatch requests.
+4. **Contract-Driven Development:** OpenAPI specifications dictate frontend and backend integrations prior to feature implementation.
 
 ---
 
-## The 5 most common architecture mistakes
+## Correlations with Other Sections
 
-1. **Microservices too small** — If a "service" cannot exist independently, it is not a microservice.
-2. **Shared database** — Destroys service independence. Each service, its own DB.
-3. **Only synchronous communication** — For non-urgent operations, async events scale better.
-4. **No API Gateway** — Exposing microservices directly to the frontend creates coupling.
-5. **No documented decisions** — In 6 months nobody remembers why X was chosen.
-
----
-
-## Questions this section must answer
-
-- How is the system organized into large blocks?
-- Why was each key technology chosen?
-- What alternatives were evaluated and why were they discarded?
-- How is the system deployed?
-- What patterns does the team apply and how?
+| Architectural Source / Artifact     | Feeds Into / Configures                             |
+| ----------------------------------- | --------------------------------------------------- |
+| `02-domain/bounded-contexts.md`     | Bounded context isolation for `09-microservices/`   |
+| `04-requirements/non-functional.md` | Scalability, security, and response time thresholds |
+| `05-architecture/decisions/`        | Enforces standards in `09-microservices/_template/` |
+| `07-api/contracts/`                 | Implements API Gateway edge routes and REST specs   |
